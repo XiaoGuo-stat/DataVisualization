@@ -1,12 +1,13 @@
 ---
 title: 'Data Visualization'
-subtitle: 'Lecture 1: Introduction to Data Science' 
+subtitle: 'Lecture 1: Introduction' 
 author: "Xiao Guo"
 date: "2023/2/18"
 output:
   beamer_presentation: 
     theme: "default" 
     colortheme: "dove"
+
   slidy_presentation: default
   ioslides_presentation: default
   powerpoint_presentation: default
@@ -15,6 +16,52 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+
+
+## A little bit about me
+
+- Northwest University, 2020.04-present
+
+- Northwest University, BS, MS, Ph.D., 2009-2019, supervised by Prof. Hai Zhang.
+
+- Columbia University, Visiting student, 2018.10-2019.10, supervised by Prof. Ming Yuan.
+
+- University of Wisconsin at Madison, Visiting student, 2015.10-2016.01
+
+My current research focuses on high dimensional statistics and statistical machine learning. More specifically, 
+
+- Network analysis, Clustering, Unsupervised learning methods
+
+- Privacy-preserving statistical data analysis, Large-scale data analysis, Federated learning methods 
+
+\center \textcolor{red}{\emph{Welcome to join us!}}
+
+## Some examples in our project-World trading patterns
+
+```{r,out.width=260,fig.align='center'}
+
+knitr::include_graphics("worldtrade.png")
+
+```
+
+
+## Some examples in our project-Multi-site brain functional connectivities
+
+```{r,out.width=260,fig.align='center'}
+
+knitr::include_graphics("Bayesiannetwork.png")
+
+```
+
+## Some examples in our project-Air pollution patterns
+
+```{r,out.width=260,fig.align='center'}
+
+knitr::include_graphics("pm25.png")
+
+```
+
+
 
 ## Data scientist: the sexy job
 
@@ -139,7 +186,66 @@ knitr::include_graphics("network.png")
 
 - Represent the data well. What information is missed? What is misinterpreted? 
 
-## References 
+
+## R studio and R markdown
+
+- RStudio is a popular IDE (Integrated Development Environment) for R programming.
+
+- It is a powerful editor for R coding and debugging.
+
+- It is a powerful generator for HTML, PDF, dynamic documents and slide shows.
+
+- RStudio can be run on both Desktop and Cloud.
+
+- Check out more nice features of RStudio at its official website.
+
+## R studio IDE
+
+```{r,out.width=300,fig.align='center'}
+knitr::include_graphics("RstudioIDE.png")
+```
+
+## R markdown
+
+https://rmarkdown.rstudio.com/index.html
+https://rmarkdown.rstudio.com/lesson-1.html
+
+- install.packages("rmarkdown") 
+- install.packages("knitr") 
+- install.packages("tinytex") 
+
+
+
+
+## Course website
+
+- https://github.com/XiaoGuo-stat/DataVisualization
+
+Weekly update. 
+```{r}
+knitr::include_graphics("git.png")
+```
+
+
+##
+
+```{r}
+knitr::include_graphics("git2.png")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Course materials
 
 - Data Visualization with R by Rob Kabacoff. 
 https://rkabacoff.github.io/datavis/
@@ -149,11 +255,14 @@ https://ajzhanghk.github.io/Stat3622/
 
 - R for Data Science (2017 O'Reilly) by Grolemund and Wickham. http://r4ds.had.co.nz/
 
+- Learning IPython for Interactive Computing and Data Visualization (2nd) by Rossant, C. (2015).
+http://ipython-books.github.io/minibook/
 
+## References
 
+- HKU Stat3622 Data Visualization.
+https://ajzhanghk.github.io/Stat3622/
 
-
-
-
-
+- B. Yu (2014). Let us own data science. IMS Bulletin Institute of Mathematical Statistics (IMS) Presidental Address, ASC-IMS Joint Co nference, Sydney, July, 2014. 
+https://www.stat.berkeley.edu/~binyu/ps/papers2014/IMS-pres-address14-yu.pdf
 
