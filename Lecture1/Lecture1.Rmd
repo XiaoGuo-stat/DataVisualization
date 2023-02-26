@@ -1,16 +1,12 @@
 ---
-title: 'Data Visualization'
-subtitle: 'Lecture 1: Introduction' 
+title: "Data Visualization"
 author: "Xiao Guo"
 date: "2023/2/18"
 output:
-  beamer_presentation: 
-    theme: "default" 
-    colortheme: "dove"
-
-  slidy_presentation: default
-  ioslides_presentation: default
-  powerpoint_presentation: default
+  beamer_presentation:
+    theme: default
+    colortheme: dove
+subtitle: 'Lecture 1: Introduction'
 ---
 
 ```{r setup, include=FALSE}
@@ -38,7 +34,7 @@ My current research focuses on high dimensional statistics and statistical machi
 
 ## Some examples in our project-World trading patterns
 
-```{r,out.width=260,fig.align='center'}
+```{r,out.width=900,fig.align='center'}
 
 knitr::include_graphics("worldtrade.png")
 
@@ -55,7 +51,7 @@ knitr::include_graphics("Bayesiannetwork.png")
 
 ## Some examples in our project-Air pollution patterns
 
-```{r,out.width=260,fig.align='center'}
+```{r,out.width=300,fig.align='center'}
 
 knitr::include_graphics("pm25.png")
 
@@ -65,7 +61,7 @@ knitr::include_graphics("pm25.png")
 
 ## Data scientist: the sexy job
 
-```{r}
+```{r,out.width=280,fig.align='center'}
 
 knitr::include_graphics("HBR201210.png")
 
@@ -79,7 +75,7 @@ knitr::include_graphics("HBR201210.png")
 ## What is a data scientist?
 
 - Nate Silver (FiveThirtyEight, author of The Signal and the Noise): "Data scientist is just a sexed up word for a statistician."
-```{r}
+```{r,out.width=280}
 knitr::include_graphics("NateSilver.png")
 ```
 
@@ -87,13 +83,13 @@ knitr::include_graphics("NateSilver.png")
 
 ## Data science is all the rage
 
-```{r,out.width=160,fig.align='center'}
+```{r,out.width=200,fig.align='center'}
 knitr::include_graphics("datascience.png")
 ```
 
 ## An example: structure learning from fMRI data
 
-```{r,out.width=260,fig.align='center'}
+```{r,out.width=300,fig.align='center'}
 knitr::include_graphics("fMRI.png")
 ```
 
@@ -102,7 +98,7 @@ knitr::include_graphics("fMRI.png")
 - Domain knowledge for explanation
 
 ## Data science vs Statistics
-```{r}
+```{r,out.width=300,fig.align='center'}
 knitr::include_graphics("datasic.png")
 ```
 
@@ -110,7 +106,7 @@ knitr::include_graphics("datasic.png")
 
 ## L. Breiman (2001): Statistical modeling: the two cultures
 
-```{r}
+```{r,out.width=300,fig.align='center'}
 knitr::include_graphics("twocluture.png")
 ```
 
@@ -125,7 +121,8 @@ knitr::include_graphics("twocluture.png")
 - Communication (to outsiders) (C) 
 
 Data Science = SDC^3
-```{r,out.width=100,fig.align='right'}
+
+```{r,out.width=100}
 knitr::include_graphics("binyu.png")
 ```
 

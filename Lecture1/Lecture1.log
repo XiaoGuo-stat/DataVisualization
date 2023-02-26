@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-1.40.10 (MiKTeX 2.8) (preloaded format=pdflatex 2022.6.16)  19 FEB 2023 14:32
+This is pdfTeX, Version 3.1415926-1.40.10 (MiKTeX 2.8) (preloaded format=pdflatex 2022.6.16)  19 FEB 2023 18:10
 entering extended mode
 **Lecture1.tex
 ("C:\Users\XIAO\Desktop\Data Visualization Lecture\Lecture1\Lecture1.tex"
@@ -1260,14 +1260,14 @@ File: network.png Graphic file (type png)
 ] <RstudioIDE.png, id=166, 416.68172pt x 346.67015pt>
 File: RstudioIDE.png Graphic file (type png)
 <use RstudioIDE.png>
-Overfull \vbox (5.27075pt too high) detected at line 386
+Overfull \vbox (5.27075pt too high) detected at line 392
  []
 
 [21
 
  <C:/Users/XIAO/Desktop/Data Visualization Lecture/Lecture1/RstudioIDE.png>]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 404.
+(Font)              <10.95> on input line 410.
 [22
 
 ] <git.png, id=183, 694.46953pt x 336.88359pt>
@@ -1287,10 +1287,10 @@ File: git2.png Graphic file (type png)
 \tf@nav=\write4
 \tf@toc=\write5
 \tf@snm=\write6
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 463.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 463.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 469.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 469.
 ("C:\Users\XIAO\Desktop\Data Visualization Lecture\Lecture1\Lecture1.aux")
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 463.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 469.
  ) 
 Here is how much of TeX's memory you used:
  16857 strings out of 495285
@@ -1304,7 +1304,7 @@ Here is how much of TeX's memory you used:
 ic/lm/lmss10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/lm/lmss12.pfb><C:/CTEX/MiKT
 eX/fonts/type1/public/lm/lmsso10.pfb><C:/CTEX/MiKTeX/fonts/type1/public/amsfont
 s/symbols/msam10.pfb>
-Output written on Lecture1.pdf (26 pages, 5710781 bytes).
+Output written on Lecture1.pdf (26 pages, 5710755 bytes).
 PDF statistics:
  252 PDF objects out of 1000 (max. 8388607)
  78 named destinations out of 1000 (max. 500000)
