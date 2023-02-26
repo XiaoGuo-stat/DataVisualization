@@ -1,0 +1,139 @@
+---
+title: 'Lecture 2: Exploratory Data Analysis '
+author: "Xiao Guo"
+date: "2023/2/21"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 2.1. Exploratory Data Analysis
+
+### Roles of Data Visualization 
+
+- Role 1: Exploratory data analysis (pre stage);
+- Role 2: Visual presentation of results (after stage).
+- John W. Tukey (1977; Exploratory Data Analysis): "The greatest value of a picture is when it forces us to notice what we never expected to see.”
+
+```{r,echo = FALSE}
+knitr::include_graphics("tukey.png")
+```
+
+### John Tukey (1915-2000)
+
+ Proposed “Exploratory Data Analysis”  
+
+- Coined terms: Boxplot, Stem-and-Leaf plot, ANOVA (Analysis of Variance)  
+
+- Coined terms “Bit” and “Software”  
+
+- Co-Developed Fast Fourier Transform algorithm, Projection Pursuit, Jackknife estimation  
+
+- Famous quote: “The best thing about being a statistician is that you get to play in everyone's backyard.”
+ 
+- https://en.wikipedia.org/wiki/John_Tukey 
+
+### John Tukey: Exploratory Data Analysis (1977)
+
+
+- Five-number summary
+
+- Stem-and-Leaf plot
+
+- Scatter plot
+
+- Box-plot, Outliers
+
+- Residual plot
+
+- Smoother
+
+- Bag plot (two or three dimensional 'box' plot)
+
+## 2.2. Simple Base Graphics
+
+### Iris Dataset
+
+```{r}
+DataX = iris  
+str(DataX)
+#DataX$Species
+dim(DataX)
+head(DataX)
+summary(DataX)
+```
+
+### Basic R Plots
+
+#### Histogram
+```{r}
+x = DataX[,1]
+hist(x, main='Histogram (Default)')   
+hist(x, breaks=20, col="orange", main='More Bins and Coloring') 
+hist(x, breaks=20, freq=F, main='Histogram plus Density Plot')   # using freq=FALSE
+lines(density(x), col=2, lty=1, lwd=2)  #add the density curve
+```
+
+#### Box plot
+```{r}
+x = DataX[,2]
+boxplot(x,main="Box plot",col="gold")
+mtext("Speal Width", side = 2, line = 2.8,cex=1.4)
+boxplot(DataX[,1:4], col=c(2,3,4,5), main='Side-by-side Boxplot') 
+boxplot(Sepal.Length~Species, DataX, col=c(6,7,8), main="Boxplot with Grouping")
+boxplot(Petal.Length~Species, DataX, col=c(6,7,8), main="Boxplot with Grouping")
+boxplot(Sepal.Width~Species, DataX, col=c(6,7,8), main="Boxplot with Grouping")
+boxplot(Petal.Width~Species, DataX, col=c(6,7,8), main="Boxplot with Grouping")
+```
+
+#### Pie and Bar Charts
+```{r}
+DataX$Flag = DataX$Sepal.Length>5 # Create a binary flag
+pie(table(DataX$Species[DataX$Flag]), col=c(2,3,4))
+barplot(table(DataX$Species[DataX$Flag]), col=c(5,6,7))
+barplot(table(DataX$Species, DataX$Flag), col=c(5,6,7), beside=T)
+```
+
+#### Relationship Between Variables
+```{r}
+x = DataX$Petal.Length; y = DataX$Petal.Width; z = DataX$Species
+plot(x, y, xlab="Petal.Length", ylab="Petal.Width") 
+abline(coef(lm(y~x)), col=1, lty=2)
+plot(x, y, col=c(2,3,4)[z], pch=20, cex=2.0, xlab="Petal.Length", ylab="Petal.Width") 
+abline(lm(y~x), col=1, lty=2) 
+legend("topleft", levels(z), pch=20, col=c(2,3,4))
+```
+
+#### Pairwise Scatter Plot
+```{r}
+plot(DataX, col=DataX$Species, main="Pairwise Scatter Plot")
+pairs(DataX[,1:4], panel = panel.smooth, col = c(4,5,6)[DataX$Species], main="More Sophisticated")
+```
+
+#### Bag Plot
+
+- The bagplot consists of three nested polygons, called the "bag", the "fence", and the "loop".
+
+- The inner polygon, called the bag, is constructed on the basis of Tukey depth, the smallest number of observations that can be contained by a half-plane that also contains a given point.[4] It contains at most 50% of the data points.
+
+- The outermost of the three polygons, called the fence is not drawn as part of the bagplot, but is used to construct it. It is formed by inflating the bag by a certain factor (usually 3). Observations outside the fence are flagged as outliers.
+
+- The observations that are not marked as outliers are surrounded by a loop, the convex hull of the observations within the fence.
+```{r}
+library(aplpack)
+bagplot(DataX[, 1:2])
+```
+
+#### Violin Plot
+A violin plot is a hybrid of a box plot and a kernel density plot, which shows peaks in the data. It is used to visualize the distribution of numerical data. Unlike a box plot that can only show summary statistics, violin plots depict summary statistics and the density of each variable.
+```{r}
+library(vioplot)
+vioplot(DataX[,1], DataX[,2],col=4)
+```
+
+
