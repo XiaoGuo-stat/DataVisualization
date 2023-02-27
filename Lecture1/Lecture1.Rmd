@@ -155,6 +155,8 @@ knitr::include_graphics("DataScienceWorkflow1.png")
 knitr::include_graphics("tukey.png")
 ```
 
+
+
 ## Principles of data visualization
 
 - Determine your audience. What questions will they need answered?
@@ -234,6 +236,10 @@ knitr::include_graphics("git2.png")
 
 
 
+##
+
+- https://mp.weixin.qq.com/s/RnzO-IGVlvXLjBuHCS7K4w
+- https://mp.weixin.qq.com/s/FB8CUVRVcfbi-EExKCA4_g
 
 
 
