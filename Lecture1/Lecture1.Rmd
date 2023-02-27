@@ -14,23 +14,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 
-## A little bit about me
 
-- Northwest University, 2020.04-present
-
-- Northwest University, BS, MS, Ph.D., 2009-2019, supervised by Prof. Hai Zhang.
-
-- Columbia University, Visiting student, 2018.10-2019.10, supervised by Prof. Ming Yuan.
-
-- University of Wisconsin at Madison, Visiting student, 2015.10-2016.01
-
-My current research focuses on high dimensional statistics and statistical machine learning. More specifically, 
-
-- Network analysis, Clustering, Unsupervised learning methods
-
-- Privacy-preserving statistical data analysis, Large-scale data analysis, Federated learning methods 
-
-\center \textcolor{red}{\emph{Welcome to join us!}}
 
 ## Some examples in our project-World trading patterns
 
