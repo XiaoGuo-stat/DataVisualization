@@ -3,6 +3,7 @@ title: "Data Visualization"
 author: "Xiao Guo"
 date: "2023/2/18"
 output:
+  ioslides_presentation: default
   beamer_presentation:
     theme: default
     colortheme: dove
