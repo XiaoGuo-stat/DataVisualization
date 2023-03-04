@@ -352,9 +352,10 @@ emoji_glue("one :heart:")
 emoji_glue("many :heart*:")
 ```
 
+# References
 
-
-
+- ### [Network analysis with R](https://kateto.net/networks-r-igraph)
+- ### [HKU Stat3622 Data Visualization](https://ajzhanghk.github.io/Stat3622/)
 
 
 
