@@ -3,8 +3,8 @@ title: 'Lecture 3: Elegant Graphics with ggplot2'
 author: "Xiao Guo"
 date: "2023/3/4"
 output:
-  html_document: default
   word_document: default
+  html_document: default
   pdf_document: default
 ---
 
@@ -221,7 +221,7 @@ grid.arrange(p1, p2, ncol=2)
 ```
 
 # 3.4 Options and themes
-```{r,out.width=150%}
+```{r}
 p1 = ggplot(iris, aes(x=Sepal.Length, y=Petal.Length, colour=Species)) + 
   geom_point() + stat_smooth(method="lm", se=F) +
   labs(title="Iris Flower") + 
