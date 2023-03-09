@@ -253,6 +253,7 @@ options(scipen=999)  # turn-off scientific notation like 1e+48
 library(ggplot2)
 theme_set(theme_bw())  # pre-set the bw theme.
 data("midwest", package = "ggplot2")
+midwest
 # midwest <- read.csv("http://goo.gl/G1K41K")  # bkup data source
 
 # Scatterplot
@@ -284,6 +285,7 @@ mpg_select <- mpg[mpg$hwy >= 35 & mpg$cty > 27, ]
 g <- ggplot(mpg, aes(cty, hwy)) + 
   geom_count() + 
   geom_smooth(method="lm", se=F)
+plot(g)
 
 ggMarginal(g, type = "histogram", fill="transparent")
 ggMarginal(g, type = "boxplot", fill="transparent")
@@ -298,11 +300,12 @@ library(ggcorrplot)
 
 # Correlation matrix
 data(mtcars)
-corr <- round(cor(mtcars), 2)
-
+corr <- round(cor(mtcars), 1)
+cor(mtcars)
+corr
 # Plot
 ggcorrplot(corr, hc.order = TRUE, 
-           type = "lower", 
+           type = "upper", 
            lab = TRUE, 
            lab_size = 3, 
            method="circle", 
@@ -338,6 +341,7 @@ ggplot(mtcars, aes(x=`car name`, y=mpg_z, label=mpg_z)) +
 ## Ordered Bar Chart
 ```{r}
 cty_mpg <- aggregate(mpg$cty, by=list(mpg$manufacturer), FUN=mean)  # aggregate
+cty_mpg
 colnames(cty_mpg) <- c("make", "mileage")  # change column names
 cty_mpg <- cty_mpg[order(cty_mpg$mileage), ]  # sort
 cty_mpg$make <- factor(cty_mpg$make, levels = cty_mpg$make)  # to retain the order in plot.
@@ -542,6 +546,7 @@ pca_mod <- prcomp(df)  # compute principal components
 
 # Data frame of principal components ----------------------
 df_pc <- data.frame(pca_mod$x, Species=iris$Species)  # dataframe of principal components
+df_pc
 df_pc_vir <- df_pc[df_pc$Species == "virginica", ]  # df for 'virginica'
 df_pc_set <- df_pc[df_pc$Species == "setosa", ]  # df for 'setosa'
 df_pc_ver <- df_pc[df_pc$Species == "versicolor", ]  # df for 'versicolor'
