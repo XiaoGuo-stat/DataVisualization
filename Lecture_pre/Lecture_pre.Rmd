@@ -124,12 +124,14 @@ levels(a)
 
 ```{r}
 m1 <- matrix(1:6,nrow=3)
+m1 <- matrix(1:6,nrow=3,byrow = FALSE)
+
 m1
-m1[1,]
-m1[1:3,]
-apply(m1, 2, sum)
-m2 <- matrix(1:6,ncol=3)
-m2
+#m1[1,]
+#m1[1:3,]
+#apply(m1, 2, sum)
+#m2 <- matrix(1:6,ncol=3)
+#m2
 ```
 
 ### It can also be interesting combine different vectors into a matrix row-wise or column-wise. This is possible with `rbind()` and `cbind()`:
@@ -140,7 +142,7 @@ age <- 25:27
 rbind(countries,age)
 countries <- c('italy','france','germany')
 age <- 25:27
-cbind(countries,age)
+rbind(countries,age)
 ```
 
 # 0.7 Arrays in R Programming
@@ -149,7 +151,7 @@ cbind(countries,age)
 
 ```{r}
 a <- array(1:16,dim=c(6,3,2))
-a
+a[1,2,2]
 ```
 
 ## lists
@@ -315,9 +317,9 @@ average <- function(x)
 { val = 0
   for (i in x){val=val+i}
   av = val/length(x)
-  av
+  list(average=av, summation=val)
     }
-average(1:3)
+average(1:3)$summation
 ```
 
 # 0.11 Probability distributions in R Programming

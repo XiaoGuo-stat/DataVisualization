@@ -474,25 +474,18 @@ a</code></pre>
 <div id="as-you-probably-know-the-matrix-is-a-2-dimensional-array-of-numbers.-it-can-be-built-using-the-function-matrix." class="section level3">
 <h3>As you probably know, the matrix is a 2-dimensional array of numbers. It can be built using the function <code>matrix()</code>.</h3>
 <pre class="r"><code>m1 &lt;- matrix(1:6,nrow=3)
+m1 &lt;- matrix(1:6,nrow=3,byrow = FALSE)
+
 m1</code></pre>
 <pre><code>##      [,1] [,2]
 ## [1,]    1    4
 ## [2,]    2    5
 ## [3,]    3    6</code></pre>
-<pre class="r"><code>m1[1,]</code></pre>
-<pre><code>## [1] 1 4</code></pre>
-<pre class="r"><code>m1[1:3,]</code></pre>
-<pre><code>##      [,1] [,2]
-## [1,]    1    4
-## [2,]    2    5
-## [3,]    3    6</code></pre>
-<pre class="r"><code>apply(m1, 2, sum)</code></pre>
-<pre><code>## [1]  6 15</code></pre>
-<pre class="r"><code>m2 &lt;- matrix(1:6,ncol=3)
-m2</code></pre>
-<pre><code>##      [,1] [,2] [,3]
-## [1,]    1    3    5
-## [2,]    2    4    6</code></pre>
+<pre class="r"><code>#m1[1,]
+#m1[1:3,]
+#apply(m1, 2, sum)
+#m2 &lt;- matrix(1:6,ncol=3)
+#m2</code></pre>
 </div>
 <div id="it-can-also-be-interesting-combine-different-vectors-into-a-matrix-row-wise-or-column-wise.-this-is-possible-with-rbind-and-cbind" class="section level3">
 <h3>It can also be interesting combine different vectors into a matrix row-wise or column-wise. This is possible with <code>rbind()</code> and <code>cbind()</code>:</h3>
@@ -504,11 +497,10 @@ rbind(countries,age)</code></pre>
 ## age       &quot;25&quot;    &quot;26&quot;     &quot;27&quot;</code></pre>
 <pre class="r"><code>countries &lt;- c(&#39;italy&#39;,&#39;france&#39;,&#39;germany&#39;)
 age &lt;- 25:27
-cbind(countries,age)</code></pre>
-<pre><code>##      countries age 
-## [1,] &quot;italy&quot;   &quot;25&quot;
-## [2,] &quot;france&quot;  &quot;26&quot;
-## [3,] &quot;germany&quot; &quot;27&quot;</code></pre>
+rbind(countries,age)</code></pre>
+<pre><code>##           [,1]    [,2]     [,3]     
+## countries &quot;italy&quot; &quot;france&quot; &quot;germany&quot;
+## age       &quot;25&quot;    &quot;26&quot;     &quot;27&quot;</code></pre>
 </div>
 </div>
 <div id="arrays-in-r-programming" class="section level1">
@@ -516,26 +508,8 @@ cbind(countries,age)</code></pre>
 <div id="arrays-are-objects-that-can-have-one-two-or-more-dimensions.-when-the-array-is-one-dimensional-it-coincides-with-the-vector.-in-the-case-its-2d-its-like-to-use-the-matrix-function.-in-other-words-arrays-are-useful-to-build-a-data-structure-with-more-than-2-dimensions." class="section level3">
 <h3>Arrays are objects that can have one, two, or more dimensions. When the array is one-dimensional, it coincides with the vector. In the case it’s 2D, it’s like to use the matrix function. In other words, arrays are useful to build a data structure with more than 2 dimensions.</h3>
 <pre class="r"><code>a &lt;- array(1:16,dim=c(6,3,2))
-a</code></pre>
-<pre><code>## , , 1
-## 
-##      [,1] [,2] [,3]
-## [1,]    1    7   13
-## [2,]    2    8   14
-## [3,]    3    9   15
-## [4,]    4   10   16
-## [5,]    5   11    1
-## [6,]    6   12    2
-## 
-## , , 2
-## 
-##      [,1] [,2] [,3]
-## [1,]    3    9   15
-## [2,]    4   10   16
-## [3,]    5   11    1
-## [4,]    6   12    2
-## [5,]    7   13    3
-## [6,]    8   14    4</code></pre>
+a[1,2,2]</code></pre>
+<pre><code>## [1] 9</code></pre>
 </div>
 <div id="lists" class="section level2">
 <h2>lists</h2>
