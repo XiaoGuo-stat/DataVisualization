@@ -1,0 +1,141 @@
+---
+title: 'Lecture 4: Data Manipulation'
+author: "Xiao Guo"
+date: "2023/3/14"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<style type="text/css">
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+</style>
+
+# 4.1. Data Manipulation
+
+## Data Exploration
+
+- ###  R for Data Science (O'Reilly 2017) by Hadley Wickham
+
+- ### Free Online: http://r4ds.had.co.nz/
+
+- ### Major coverage:
+  -  #### Data manipulation (R:dplyr)
+  -  #### Data visualization (R:ggplot2)
+
+- ### Data Exploration = Data manipulation + Data visualization.
+
+
+## Data Wrangling
+
+- ###  Data wrangling (a term used in data science) is the process of transforming/mapping data from raw format into ready-to-analyze format.
+
+- ### Besides ggplot2() for data visualization, Hadley Wickham has created a series of R packages for data wrangling, including
+
+  - #### tidyr for tidy data: observations in rows, variables in columns
+  - #### tibble for better ways to create, print and subset data frames
+  - #### dplyr for data manipulation -> today
+
+##  Feature Engineering
+
+- ### A term often used in machine learning
+> #### Andrew Ng (Stanford): "Coming up with features is difficult, time-consuming, requires expert knowledge. Applied machine learning is basically feature engineering."
+
+- ### In statistics: variable creation and transformation
+
+- ### Dictionary learning with overcomplete features ...
+
+- ### Nowadays, deep learning algorithms aim at automatic feature learning instead of manual feature engineering ...
+
+# 4.2 R:dplyr Package
+
+## R::dplyr verbs
+
+- ### `filter()` to select observations
+- ### `arrange()` to order observations
+- ### `mutate()` to add new variables
+- ### `group_by()` to group variables for summarise
+- ### R::base:`merge()` to combine two data.frames (or R::dplyr xxx_joins)
+
+## Filter
+
+```{r}
+library(dplyr)
+(tmp = filter(iris, Species == 'versicolor' & Sepal.Length > 6.6))
+```
+
+- ### Rowwise selection of samples/observations
+- ### Similar to base:which or subsetting
+
+## Arrange
+
+```{r}
+arrange(tmp, Sepal.Length, Sepal.Width, desc(Petal.Length))
+```
+
+- ### Similar to base:sort and order functions
+
+## Mutate 
+
+```{r}
+tmp = mutate(iris, Sepal.Size = Sepal.Length*Sepal.Width, 
+             Petal.Size = Petal.Length*Petal.Width) 
+head(tmp)
+```
+
+- ### New variable/feature creation
+- ### Base commands: tmp$Sepal.Size = ...
+
+```{r}
+library(ggplot2)
+ggplot(tmp, aes(x=Sepal.Size, y=Petal.Size, colour=Species)) + 
+  geom_point(size=2)
+```
+
+## Summarise
+```{r}
+summarise(group_by(tmp, Species), mean(Sepal.Size), mean(Petal.Size))
+```
+
+## Merge
+```{r}
+(tmp1 = data.frame(Species=levels(iris$Species), x1 = c("A","B","C"), x2 = round(runif(3),3)))
+head(merge(iris, tmp1, by = "Species"))
+```
+
+# 4.3 Pipes %>%
+
+- ### The pipe %>% requires R package dplyr or magrittr
+
+- ### Powerful trick for coding a sequence of operations
+
+- ### Output of old operation as the first argument of new operation
+
+- ### Especially useful in combined with ggplot2
+
+```{r}
+mtcars %>% 
+  group_by(cyl) %>% 
+  summarise(mean_mpg = mean(mpg))
+```
+
+
+
+
+
+
+
