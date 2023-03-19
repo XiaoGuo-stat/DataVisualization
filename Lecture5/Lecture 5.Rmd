@@ -1,6 +1,6 @@
 ---
 title: 'Lecture 5: Visualization of Network Data'
-author: "Xiao Guo"
+author: "Xiao Guo (Thanks for Katherine Ognyanova, www.kateto.net)"
 date: "2023/3/19"
 output:
   html_document: default
@@ -1175,7 +1175,6 @@ colrs <- adjustcolor( c("gray50", "tomato", "gold", "yellowgreen"), alpha=.6)
 
 plot(net, vertex.color=colrs[V(net)$community])
 ```
-
 
 
 
