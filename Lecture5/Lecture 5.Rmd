@@ -1,0 +1,1183 @@
+---
+title: 'Lecture 5: Visualization of Network Data'
+author: "Xiao Guo"
+date: "2023/3/19"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<style type="text/css">
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+</style>
+
+# 5.1. Network analysis
+
+### Relationship: an irreducible property of two or more entities
+- ### contrast to properties of entities alone (“attributes”)
+
+### Focus of network analysis: The study of relational data arising from “social” entities
+
+- ### Entities: people, animals, groups, locations, organizations, regions, etc.
+- ###  Relationships: communication, acquaintanceship, sexual contact, trade, migration rate, alliance/conflict, etc.
+
+### Network data: A collection of entities and a set of measured relations between them
+- ### Entities: actors, nodes, vertices
+- ### Relations: ties, links, edges
+
+### Relations can be
+- ### directed or undirected
+- ### signed or valued
+
+## Characteristics of network data
+
+- ### Sparisity
+- ### Hub
+- ### Community
+- ### Small-world
+
+## Network analysis
+
+- ### Network modeling
+- ### Community detection
+- ### Link prediction
+
+
+# 5.2. Networks in igraph
+
+## Create networks
+### The code below generates an undirected graph with three edges. The numbers are interpreted as vertex IDs, so the edges are 1–>2, 2–>3, 3–>1.
+
+```{r}
+library(igraph)
+
+g1 <- graph( edges=c(1,2, 2,3, 3, 1), n=10, directed=T) 
+
+plot(g1) # A simple plot of the network - we'll talk more about plots later
+```
+
+
+```{r}
+class(g1)
+```
+
+```{r}
+g1
+```
+
+```{r}
+# Now with 10 vertices, and directed by default:
+
+g2 <- graph( edges=c(1,2, 2,3, 3, 1), n=10 )
+
+plot(g2)   
+```
+
+```{r}
+g2
+```
+
+```{r}
+g3 <- graph( c("John", "Jim", "Jim", "Jill", "Jill", "John")) # named vertices
+
+# When the edge list has vertex names, the number of nodes is not needed
+
+plot(g3)
+```
+
+
+```{r}
+g4 <- graph( c("John", "Jim", "Jim", "Jack", "Jim", "Jack", "John", "John"), 
+
+             isolates=c("Jesse", "Janis", "Jennifer", "Justin") )  
+
+# In named graphs we can specify isolates by providing a list of their names.
+
+
+set.seed(10)
+plot(g4, edge.arrow.size=.5, vertex.color="gold", vertex.size=15, 
+
+     vertex.frame.color="gray", vertex.label.color="black", 
+
+     vertex.label.cex=0.8, vertex.label.dist=2, edge.curved=0.2) 
+```
+
+
+### Small graphs can also be generated with a description of this kind: - for undirected tie, +- or -+ for directed ties pointing left & right, ++ for a symmetric tie, and “:” for sets of vertices.
+
+```{r}
+plot(graph_from_literal(a--b, b--c)) # the number of dashes doesn't matter
+
+```
+
+```{r}
+plot(graph_from_literal(b--+a, b+--c))
+```
+
+```{r}
+plot(graph_from_literal(a+-+b, b+-+c)) 
+```
+
+```{r}
+plot(graph_from_literal(a:b:c---d:e:f))
+```
+
+```{r}
+gl <- graph_from_literal(a-b-c-d-e-f, a-g-h-b, h-e:f:i, j)
+
+plot(gl)
+```
+
+## Edge, vertex, and network attributes
+
+### Access vertices and edges:
+
+```{r}
+E(g4) # The edges of the object
+```
+
+```{r}
+V(g4) # The vertices of the object
+```
+
+### You can also examine the network matrix directly:
+
+```{r}
+adj <- g4[]
+adjj <- as.matrix (adj)
+class(adjj)
+class(adj)
+
+g4[,1] 
+```
+
+### Add attributes to the network, vertices, or edges:
+
+```{r}
+V(g4)$name # automatically generated when we created the network.
+```
+
+```{r}
+V(g4)$gender <- c("male", "male", "male", "male", "female", "female", "male")
+
+E(g4)$type <- "email" # Edge attribute, assign "email" to all edges
+
+E(g4)$weight <- c(1,2,3,4)    # Edge weight, setting all existing edges to 10
+
+E(g4)$weight
+V(g4)
+```
+
+### Examine attributes:
+
+```{r}
+edge_attr(g4)
+```
+
+```{r}
+vertex_attr(g4)
+```
+
+## Specific graphs and graph models
+
+### Empty graph
+
+```{r}
+eg <- make_empty_graph(40)
+
+plot(eg, vertex.size=30, vertex.label=1:40)
+```
+
+### Full graph
+
+```{r}
+fg <- make_full_graph(50)
+
+plot(fg, vertex.size=10, vertex.label=NA)
+```
+
+### Simple star graph
+
+```{r}
+st <- make_star(40)
+
+plot(st, vertex.size=10, vertex.label=NA)
+```
+
+### Tree graph
+
+```{r}
+tr <- make_tree(40, children = 10, mode = "undirected")
+
+plot(tr, vertex.size=10, vertex.label=NA) 
+```
+
+### Ring graph
+
+```{r}
+rn <- make_ring(40)
+
+plot(rn, vertex.size=10, vertex.label=NA)
+```
+
+### Erdos-Renyi random graph model
+
+```{r}
+er <- sample_gnm(n=100, m=10) 
+
+plot(er, vertex.size=6, vertex.label=NA) 
+```
+
+## Watts-Strogatz small-world model
+
+### Creates a lattice (with dim dimensions and size nodes across dimension) and rewires edges randomly with probability p. The neighborhood in which edges are connected is nei. You can allow loops and multiple edges.
+
+```{r}
+sw <- sample_smallworld(dim=2, size=10, nei=1, p=0.1)
+
+plot(sw, vertex.size=6, vertex.label=NA, layout=layout_in_circle)
+```
+
+### Barabasi-Albert preferential attachment model for scale-free graphs
+
+### (n is number of nodes, power is the power of attachment (1 is linear); m is the number of edges added on each time step)
+
+```{r}
+ba <-  sample_pa(n=100, power=1, m=1,  directed=F)
+
+ plot(ba, vertex.size=6, vertex.label=NA)
+```
+
+### igraph can also give you some notable historical graphs. For instance:
+
+```{r}
+zach <- graph("Zachary") # the Zachary carate club
+
+plot(zach, vertex.size=10, vertex.label=NA)
+```
+
+```{r}
+deg <- degree(zach)
+deg
+ord <- order(deg,decreasing=T)
+V(zach)[ord[1:3]]$color <- "blue"
+V(zach)[ord[4:6]]$color <- "orange"
+V(zach)[ord[7:34]]$color <- "green4"
+
+plot(zach, vertex.size=20, vertex.label=NA,vertex.frame.color = NA)
+
+```
+
+# 5.3 Reading network data from files
+
+### We will work primarily with two small example data sets. Both contain data about media organizations. One involves a network of hyperlinks and mentions among news sources. The second is a network of links between media venues and consumers. While the example data used here is small, many of the ideas behind the analyses and visualizations we will generate apply to medium and large-scale networks.
+
+## DATASET 1: edgelist
+
+### The first data set we are going to work with consists of two files, “Media-Example-NODES.csv” and “Media-Example-EDGES.csv”
+
+```{r}
+nodes <- read.csv("Dataset1-Media-Example-NODES.csv", header=T, as.is=T)
+
+links <- read.csv("Dataset1-Media-Example-EDGES.csv", header=T, as.is=T)
+```
+
+### Examine the data:
+
+```{r}
+head(nodes)
+
+head(links)
+
+nrow(nodes); length(unique(nodes$id))
+
+nrow(links); nrow(unique(links[,c("from", "to")]))
+```
+
+### Notice that there are more links than unique from-to combinations. That means we have cases in the data where there are multiple links between the same two nodes. We will collapse all links of the same type between the same two nodes by summing their weights, using aggregate() by “from”, “to”, & “type”. We don’t use simplify() here so as not to collapse different link types.
+
+```{r}
+links <- aggregate(links[,3], links[,-3], sum)
+
+links <- links[order(links$from, links$to),]
+
+colnames(links)[4] <- "weight"
+
+rownames(links) <- NULL
+```
+
+## DATASET 2: matrix
+
+### Two-mode or bipartite graphs have two different types of actors and links that go across, but not within each type. Our second media example is a network of that kind, examining links between news sources and their consumers.
+
+```{r}
+nodes2 <- read.csv("Dataset2-Media-User-Example-NODES.csv", header=T, as.is=T)
+
+links2 <- read.csv("Dataset2-Media-User-Example-EDGES.csv", header=T, row.names=1)
+```
+
+### Examine the data:
+
+```{r}
+head(nodes2)
+
+head(links2)
+```
+
+### We can see that links2 is an adjacency matrix for a two-mode network:
+
+```{r}
+links2 <- as.matrix(links2)
+
+dim(links2)
+
+dim(nodes2)
+```
+
+# 5.4. Turning networks into igraph objects
+
+### We start by converting the raw data to an igraph network object. Here we use igraph’s graph.data.frame function, which takes two data frames: d and vertices.
+
+### d describes the edges of the network. Its first two columns are the IDs of the source and the target node for each edge. The following columns are edge attributes (weight, type, label, or anything else).
+
+### vertices starts with a column of node IDs. Any following columns are interpreted as node attributes.
+
+## Dataset 1
+
+```{r}
+library(igraph)
+
+
+
+net <- graph_from_data_frame(d=links, vertices=nodes, directed=T) 
+
+class(net)
+```
+
+```{r}
+net
+```
+
+### We also have easy access to nodes, edges, and their attributes with:
+
+```{r}
+E(net)       # The edges of the "net" object
+
+V(net)       # The vertices of the "net" object
+
+E(net)$type  # Edge attribute "type"
+
+V(net)$media # Vertex attribute "media"
+```
+
+### Now that we have our igraph network object, let’s make a first attempt to plot it.
+
+```{r}
+plot(net, edge.arrow.size=.4,vertex.label=NA)
+```
+
+### That doesn’t look very good. Let’s start fixing things by removing the loops in the graph.
+
+```{r}
+net <- simplify(net, remove.multiple = F, remove.loops = T) 
+```
+
+## Dataset 2
+
+### As we have seen above, this time the edges of the network are in a matrix format. We can read those into a graph object using graph_from_incidence_matrix(). In igraph, bipartite networks have a node attribute called type that is FALSE (or 0) for vertices in one mode and TRUE (or 1) for those in the other mode.
+
+```{r}
+head(nodes2)
+```
+
+```{r}
+head(links2)
+```
+
+```{r}
+net2 <- graph_from_incidence_matrix(links2)
+
+table(V(net2)$type)
+```
+
+### To transform a one-mode network matrix into an igraph object, use instead `graph_from_adjacency_matrix()`.
+
+### We can also easily generate bipartite projections for the two-mode network: (co-memberships are easy to calculate by multiplying the network matrix by its transposed matrix, or using igraph’s `bipartite.projection()` function).
+
+```{r}
+net2.bp <- bipartite.projection(net2)
+```
+
+### We can calculate the projections manually as well:
+
+```{r}
+as_incidence_matrix(net2)  %*% t(as_incidence_matrix(net2)) 
+
+t(as_incidence_matrix(net2)) %*%   as_incidence_matrix(net2)
+```
+
+```{r}
+plot(net2.bp$proj1, vertex.label.color="black", vertex.label.dist=1, vertex.size=7, vertex.label=nodes2$media[!is.na(nodes2$media.type)])
+```
+
+```{r}
+plot(net2.bp$proj2, vertex.label.color="black", vertex.label.dist=1,
+vertex.size=7, vertex.label=nodes2$media[ is.na(nodes2$media.type)])
+```
+
+# 5.5. Plotting networks with igraph
+
+### Plotting with igraph: the network plots have a wide set of parameters you can set. Those include node options (starting with `vertex.`) and edge options (starting with `edge.`). A list of selected options is included below, but you can also check out `?igraph.plotting` for more information.
+
+### The igraph plotting parameters include (among others):
+
+## Plotting parameters
+### **NODES**	 
+### `vertex.color`	 Node color
+
+### `vertex.frame.color`	 Node border color
+
+### `vertex.shape`	 One of “none”, “circle”, “square”, “csquare”, “rectangle”, “crectangle”, “vrectangle”, “pie”, “raster”, or “sphere”
+ 
+### `vertex.size`	 Size of the node (default is 15)
+
+### `vertex.size2`	 The second size of the node (e.g. for a rectangle)
+
+### `vertex.label`	 Character vector used to label the nodes
+
+### `vertex.label.family`	 Font family of the label (e.g.“Times”, “Helvetica”)
+
+### `vertex.label.font`	 Font: 1 plain, 2 bold, 3, italic, 4 bold italic, 5 symbol
+
+### `vertex.label.cex`	 Font size (multiplication factor, device-dependent)
+
+### `vertex.label.dist`	 Distance between the label and the vertex
+
+### `vertex.label.degree`	 The position of the label in relation to the vertex, where 0 right, “pi” is left, “pi/2” is below, and “-pi/2” is above
+
+### **EDGES**	 
+
+### `edge.color`	 Edge color
+
+### `edge.width`	 Edge width, defaults to 1
+
+### `edge.arrow.size`	 Arrow size, defaults to 1
+
+### `edge.arrow.width`	 Arrow width, defaults to 1
+
+### `edge.lty`	 Line type, could be 0 or “blank”, 1 or “solid”, 2 or “dashed”, 3 or “dotted”, 4 or “dotdash”, 5 or “longdash”, 6 or “twodash”
+
+### `edge.label`	 Character vector used to label edges
+
+### `edge.label.family`	 Font family of the label (e.g.“Times”, “Helvetica”)
+
+### `edge.label.font`	 Font: 1 plain, 2 bold, 3, italic, 4 bold italic, 5 symbol
+
+### `edge.label.cex`	 Font size for edge labels
+
+### `edge.curved`	 Edge curvature, range 0-1 (FALSE sets it to 0, TRUE to 0.5)
+
+### `arrow.mode`	 Vector specifying whether edges should have arrows,
+ possible values: 0 no arrow, 1 back, 2 forward, 3 both
+
+### **OTHER**	 
+
+### `margin`	 Empty space margins around the plot, vector with length 4
+
+### `frame`	 if TRUE, the plot will be framed
+
+### `main`	 If set, adds a title to the plot
+
+### `sub`	 If set, adds a subtitle to the plot
+
+### We can set the node & edge options in two ways - the first one is to specify them in the `plot()` function, as we are doing below.
+
+```{r}
+# Plot with curved edges (edge.curved=.1) and reduce arrow size:
+
+plot(net, edge.arrow.size=.4, edge.curved=0)
+```
+
+```{r}
+# Set edge color to gray, and the node color to orange. 
+
+# Replace the vertex label with the node names stored in "media"
+
+plot(net, edge.arrow.size=.2, edge.curved=0,
+
+     vertex.color="green3", vertex.frame.color="#555555",
+
+     vertex.label=V(net)$media, vertex.label.color="black",
+
+     vertex.label.cex=.7) 
+```
+
+### The second way to set attributes is to add them to the igraph object. Let’s say we want to color our network nodes based on type of media, and size them based on audience size (larger audience -> larger node). We will also change the width of the edges based on their weight.
+
+```{r}
+# Generate colors based on media type:
+
+colrs <- c("gray50", "green3", "gold")
+
+V(net)$color <- colrs[V(net)$media.type]
+
+
+
+# Set node size based on audience size:
+
+V(net)$size <- V(net)$audience.size*0.7
+
+
+
+# The labels are currently node IDs.
+
+# Setting them to NA will render no labels:
+
+V(net)$label.color <- "black"
+
+#V(net)$label <- NA
+
+V(net)$label=V(net)$media
+
+# Set edge width based on weight:
+
+E(net)$width <- E(net)$weight/6
+
+
+
+#change arrow size and edge color:
+
+E(net)$arrow.size <- .2
+
+E(net)$edge.color <- "gray80"
+
+
+
+E(net)$width <- 1+E(net)$weight/12
+
+plot(net)
+```
+
+### We can also override the attributes explicitly in the plot:
+
+```{r}
+plot(net, edge.color="orange", vertex.color= colrs[V(net)$media.type]) 
+```
+
+### It helps to add a legend explaining the meaning of the colors we used:
+
+```{r}
+plot(net) 
+legend(x=-1.5, y=-1.1, c("Newspaper","Television", "Online News"), pch=21, col="#777777", pt.bg=colrs, pt.cex=2, cex=.8, bty="n", ncol=1)
+```
+
+### Sometimes, especially with semantic networks, we may be interested in plotting only the labels of the nodes:
+
+```{r}
+plot(net, vertex.shape="none", vertex.label=V(net)$media, 
+
+     vertex.label.font=2, vertex.label.color="gray40",
+
+     vertex.label.cex=.7, edge.color="gray85")
+```
+
+## Network layouts
+
+### Network layouts are simply algorithms that return coordinates for each node in a network.
+
+### For the purposes of exploring layouts, we will generate a slightly larger 80-node graph. We use the `sample_pa()` function which generates a simple graph starting from one node and adding more nodes and links based on a preset level of preferential attachment (Barabasi-Albert model).
+
+```{r}
+net.bg <- sample_pa(80) 
+
+V(net.bg)$size <- 8
+
+V(net.bg)$frame.color <- "white"
+
+V(net.bg)$color <- "orange"
+
+V(net.bg)$label <- "" 
+
+E(net.bg)$arrow.mode <- 0
+
+plot(net.bg)
+```
+
+### You can set the layout in the plot function:
+
+```{r}
+plot(net.bg, layout=layout_randomly)
+```
+
+
+```{r}
+l <- layout_in_circle(net.bg)
+
+plot(net.bg, layout=l)
+```
+
+### Or you can calculate the vertex coordinates in advance:
+`l` is simply a matrix of x, y coordinates (N x 2) for the N nodes in the graph. You can easily generate your own:
+
+```{r}
+l <- cbind(1:vcount(net.bg), c(1,2,3, vcount(net.bg):4))
+
+plot(net.bg, layout=l)
+```
+
+### This layout is just an example and not very helpful - thankfully igraph has a number of built-in layouts, including:
+
+```{r}
+# Randomly placed vertices
+
+l <- layout_randomly(net.bg)
+
+plot(net.bg, layout=l)
+```
+
+```{r}
+# Circle layout
+
+l <- layout_in_circle(net.bg)
+
+plot(net.bg, layout=l)
+```
+
+```{r}
+# 3D sphere layout
+
+l <- layout_on_sphere(net.bg)
+
+plot(net.bg, layout=l)
+```
+
+### Fruchterman-Reingold is one of the most used force-directed layout algorithms out there.
+
+### Force-directed layouts try to get a nice-looking graph where edges are similar in length and cross each other as little as possible. They simulate the graph as a physical system. Nodes are electrically charged particles that repulse each other when they get too close. The edges act as springs that attract connected nodes closer together. As a result, nodes are evenly distributed through the chart area, and the layout is intuitive in that nodes which share more connections are closer to each other. The disadvantage of these algorithms is that they are rather slow and therefore less often used in graphs larger than ~1000 vertices. You can set the “weight” parameter which increases the attraction forces among nodes connected by heavier edges.
+
+```{r}
+l <- layout_with_fr(net.bg)
+
+plot(net.bg, layout=l)
+```
+
+### You will notice that the layout is not deterministic - different runs will result in slightly different configurations. Saving the layout in l allows us to get the exact same result multiple times, which can be helpful if you want to plot the time evolution of a graph, or different relationships – and want nodes to stay in the same place in multiple plots.
+
+```{r}
+par(mfrow=c(2,2), mar=c(0,0,0,0))   # plot four figures - 2 rows, 2 columns
+
+plot(net.bg, layout=layout_with_fr)
+
+plot(net.bg, layout=layout_with_fr)
+
+plot(net.bg, layout=l)
+
+plot(net.bg, layout=l)
+```
+
+```{r}
+dev.off()
+```
+
+```{r}
+l <- layout_with_fr(net.bg)
+l <- norm_coords(l, ymin=-1, ymax=1, xmin=-1, xmax=1)
+```
+
+```{r}
+par(mfrow=c(2,2), mar=c(0,0,0,0))
+
+plot(net.bg, rescale=F, layout=l*0.1)
+
+plot(net.bg, rescale=F, layout=l*0.6)
+
+plot(net.bg, rescale=F, layout=l*0.8)
+
+plot(net.bg, rescale=F, layout=l*1.0)
+```
+
+### Another popular force-directed algorithm that produces nice results for connected graphs is Kamada Kawai. Like Fruchterman Reingold, it attempts to minimize the energy in a spring system.
+
+```{r}
+l <- layout_with_kk(net.bg)
+
+plot(net.bg, layout=l)
+```
+
+### The LGL algorithm is meant for large, connected graphs. Here you can also specify a root: a node that will be placed in the middle of the layout.
+
+```{r}
+plot(net.bg, layout=layout_with_lgl)
+```
+
+## Network layouts (detailed)
+
+### Notice that our network plot is still not too helpful. We can identify the type and size of nodes, but cannot see much about the structure since the links we’re examining are so dense. One way to approach this is to see if we can sparsify the network, keeping only the most important ties and discarding the rest.
+
+```{r}
+hist(links$weight)
+
+mean(links$weight)
+
+sd(links$weight)
+```
+
+### There are more sophisticated ways to extract the key edges, but for the purposes of this exercise we’ll only keep ones that have weight higher than the mean for the network. In igraph, we can delete edges using `delete_edges(net, edges)`:
+
+```{r}
+cut.off <- mean(links$weight) 
+
+net.sp <- delete_edges(net, E(net)[weight<cut.off])
+
+plot(net.sp) 
+
+```
+
+### Another way to think about this is to plot the two tie types (hyperlink & mention) separately.
+
+```{r}
+E(net)$width <- 1.5
+
+plot(net, edge.color=c("dark red", "slategrey")[(E(net)$type=="hyperlink")+1],
+
+      vertex.color="gray40", layout=layout.circle)
+```
+
+```{r}
+net.m <- net - E(net)[E(net)$type=="hyperlink"] # another way to delete edges
+
+net.h <- net - E(net)[E(net)$type=="mention"]
+
+
+
+# Plot the two links separately:
+
+par(mfrow=c(1,2))
+
+plot(net.h, vertex.color="orange", main="Tie: Hyperlink")
+
+plot(net.m, vertex.color="lightsteelblue2", main="Tie: Mention")
+```
+
+```{r}
+# Make sure the nodes stay in place in both plots:
+
+l <- layout_with_fr(net)
+
+plot(net.h, vertex.color="orange", layout=l, main="Tie: Hyperlink")
+
+plot(net.m, vertex.color="lightsteelblue2", layout=l, main="Tie: Mention")
+```
+
+## Other ways to represent a network
+### At this point it might be useful to provide a quick reminder that there are many ways to represent a network not limited to a hairball plot.
+
+### For example, here is a quick heatmap of the network matrix:
+
+```{r}
+netm <- get.adjacency(net, attr="weight", sparse=F)
+
+colnames(netm) <- V(net)$media
+
+rownames(netm) <- V(net)$media
+
+
+
+palf <- colorRampPalette(c("gold", "dark orange","gray")) 
+
+heatmap(netm[,17:1], Rowv = NA, Colv = NA, col = palf(100), 
+
+        scale="none", margins=c(10,10) )
+```
+
+## Plotting two-mode networks with igraph
+
+### As with one-mode networks, we can modify the network object to include the visual properties that will be used by default when plotting the network. Notice that this time we will also change the shape of the nodes - media outlets will be squares, and their users will be circles.
+
+```{r}
+V(net2)$color <- c("steel blue", "orange")[V(net2)$type+1]
+
+V(net2)$shape <- c("square", "circle")[V(net2)$type+1]
+
+V(net2)$label <- ""
+
+V(net2)$label[V(net2)$type==F] <- nodes2$media[V(net2)$type==F] 
+
+V(net2)$label.cex=.4
+
+V(net2)$label.font=2
+
+
+
+plot(net2, vertex.label.color="white", vertex.size=(2-V(net2)$type)*10)
+```
+
+### Igraph also has a special layout for bipartite networks (though it doesn’t always work great, and you might be better off generating your own two-mode layout).
+
+```{r}
+plot(net2, vertex.label=NA, vertex.size=7, layout=layout_as_bipartite) 
+```
+
+### Using text as nodes may be helpful at times:
+
+```{r}
+plot(net2, vertex.shape="none", vertex.label=nodes2$media,
+
+     vertex.label.color=V(net2)$color, vertex.label.font=2.5, 
+
+     vertex.label.cex=.6, edge.color="gray70",  edge.width=2)
+```
+
+# 5.6. Network and node descriptives
+
+## Density
+
+### The proportion of present edges from all possible edges in the network.
+
+```{r}
+edge_density(net, loops=F)
+```
+
+```{r}
+ecount(net)/(vcount(net)*(vcount(net)-1)) #for a directed network
+```
+
+## Reciprocity
+
+### The proportion of reciprocated ties (for a directed network).
+
+```{r}
+reciprocity(net)
+
+dyad_census(net) # Mutual, asymmetric, and nyll node pairs
+
+2*dyad_census(net)$mut/ecount(net) # Calculating reciprocity
+```
+
+## Transitivity
+
+### global - ratio of triangles (direction disregarded) to connected triples.
+
+### local - ratio of triangles to connected triples each vertex is part of.
+
+```{r}
+transitivity(net, type="global")  # net is treated as an undirected network
+
+transitivity(as.undirected(net, mode="collapse")) # same as above
+
+transitivity(net, type="local")
+
+triad_census(net) # for directed networks 
+```
+
+### Triad types (per Davis & Leinhardt):
+
+### * 003 A, B, C, empty triad.
+### * 012 A->B, C
+### * 102 A<->B, C
+### * 021D A<-B->C
+### * 021U A->B<-C
+### * 021C A->B->C
+### * 111D A<->B<-C
+### * 111U A<->B->C
+### * 030T A->B<-C, A->C
+### * 030C A<-B<-C, A->C.
+### * 201 A<->B<->C.
+### * 120D A<-B->C, A<->C.
+### * 120U A->B<-C, A<->C.
+### * 120C A->B->C, A<->C.
+### * 210 A->B<->C, A<->C.
+### * 300 A<->B<->C, A<->C, completely connected.
+
+## Diameter
+
+### A network diameter is the longest geodesic distance (length of the shortest path between two nodes) in the network. In igraph, `diameter()` returns the distance, while `get_diameter()` returns the nodes along the first found path of that distance.
+
+### Note that edge weights are used by default, unless set to `NA`.
+
+```{r}
+diameter(net, directed=F, weights=NA)
+```
+
+```{r}
+diameter(net, directed=F)
+```
+
+```{r}
+diam <- get_diameter(net, directed=T)
+
+diam
+```
+
+### Note that `get_diameter()` returns a vertex sequence. Note though that when asked to behaved as a vector, a vertex sequence will produce the numeric indexes of the nodes in it. The same applies for edge sequences.
+
+```{r}
+class(diam)
+```
+
+```{r}
+as.vector(diam)
+```
+### Color nodes along the diameter:
+
+```{r}
+vcol <- rep("gray40", vcount(net))
+
+vcol[diam] <- "gold"
+
+ecol <- rep("gray80", ecount(net))
+
+ecol[E(net, path=diam)] <- "orange" 
+
+# E(net, path=diam) finds edges along a path, here 'diam'
+
+plot(net, vertex.color=vcol, edge.color=ecol, edge.arrow.mode=0)
+```
+
+## Node degrees
+
+### The function `degree()` has a mode of in for in-degree, out for out-degree, and all or total for total degree.
+
+```{r}
+deg <- degree(net, mode="all")
+
+plot(net, vertex.size=deg*3)
+```
+
+```{r}
+hist(deg, breaks=1:vcount(net)-1, main="Histogram of node degree")
+```
+
+## Degree distribution
+
+```{r}
+deg.dist <- degree_distribution(net, cumulative=T, mode="all")
+
+plot( x=0:max(deg), y=1-deg.dist, pch=19, cex=1.2, col="orange", 
+
+      xlab="Degree", ylab="Cumulative Frequency")
+plot( x=log(0:max(deg)+0.01), y=log(1-deg.dist), pch=19, cex=1.2, col="orange", 
+
+      xlab="Degree", ylab="Cumulative Frequency")
+
+```
+
+## Centrality & centralization
+
+### Centrality functions (vertex level) and centralization functions (graph level). The centralization functions return `res` - vertex centrality, `centralization`, and `theoretical_max` - maximum centralization score for a graph of that size. The centrality function can run on a subset of nodes (set with the `vids` parameter). This is helpful for large graphs where calculating all centralities may be a resource-intensive and time-consuming task.
+
+### Degree (number of ties)
+
+```{r}
+degree(net, mode="in")
+
+centr_degree(net, mode="in", normalized=T)
+```
+
+### Closeness (centrality based on distance to others in the graph)
+Inverse of the node’s average geodesic distance to others in the network.
+
+```{r}
+closeness(net, mode="all", weights=NA) 
+
+centr_clo(net, mode="all", normalized=T) 
+```
+
+### Eigenvector (centrality proportional to the sum of connection centralities)
+Values of the first eigenvector of the graph matrix.
+
+```{r}
+eigen_centrality(net, directed=T, weights=NA)
+
+centr_eigen(net, directed=T, normalized=T) 
+```
+
+### Betweenness (centrality based on a broker position connecting others)
+Number of geodesics that pass through the node or the edge.
+
+```{r}
+betweenness(net, directed=T, weights=NA)
+
+edge_betweenness(net, directed=T, weights=NA)
+
+centr_betw(net, directed=T, normalized=T)
+```
+
+## Hubs and authorities
+
+### The hubs and authorities algorithm developed by Jon Kleinberg was initially used to examine web pages. Hubs were expected to contain catalogs with a large number of outgoing links; while authorities would get many incoming links from hubs, presumably because of their high-quality relevant information.
+
+```{r}
+hs <- hub_score(net, weights=NA)$vector
+
+as <- authority_score(net, weights=NA)$vector
+
+
+
+par(mfrow=c(1,2))
+
+plot(net, vertex.size=hs*50, main="Hubs")
+plot(net, vertex.size=as*30, main="Authorities")
+```
+
+# 5.7 Distances and paths
+
+### Average path length: the mean of the shortest distance between each pair of nodes in the network (in both directions for directed graphs).
+
+```{r}
+mean_distance(net, directed=F)
+```
+
+### We can also find the length of all shortest paths in the graph:
+
+```{r}
+distances(net) # with edge weights
+
+distances(net, weights=NA) # ignore weights
+```
+
+### We can extract the distances to a node or set of nodes we are interested in. Here we will get the distance of every media from the New York Times.
+
+```{r}
+dist.from.NYT <- distances(net, v=V(net)[media=="NY Times"], to=V(net), weights=NA)
+
+
+
+# Set colors to plot the distances:
+
+oranges <- colorRampPalette(c("dark red", "gold"))
+
+col <- oranges(max(dist.from.NYT)+1)
+
+col <- col[dist.from.NYT+1]
+
+
+
+plot(net, vertex.color=col, vertex.label=dist.from.NYT, edge.arrow.size=.6, 
+
+     vertex.label.color="white")
+```
+
+### We can also find the shortest path between specific nodes. Say here between MSNBC and the New York Post:
+
+```{r}
+news.path <- shortest_paths(net, 
+
+                            from = V(net)[media=="MSNBC"], 
+
+                             to  = V(net)[media=="New York Post"],
+
+                             output = "both") # both path nodes and edges
+
+
+
+# Generate edge color variable to plot the path:
+
+ecol <- rep("gray80", ecount(net))
+
+ecol[unlist(news.path$epath)] <- "orange"
+
+# Generate edge width variable to plot the path:
+
+ew <- rep(2, ecount(net))
+
+ew[unlist(news.path$epath)] <- 4
+
+# Generate node color variable to plot the path:
+
+vcol <- rep("gray40", vcount(net))
+
+vcol[unlist(news.path$vpath)] <- "gold"
+
+
+
+plot(net, vertex.color=vcol, edge.color=ecol, 
+
+     edge.width=ew, edge.arrow.mode=0)
+```
+
+# 5.8 Groups
+
+##Community detection
+
+### A number of algorithms aim to detect groups that consist of densely connected nodes with fewer connections across groups.
+
+### *Community detection based on edge betweenness (Newman-Girvan)*
+
+### High-betweenness edges are removed sequentially (recalculating at each step) and the best partitioning of the network is selected.
+
+```{r}
+ceb <- cluster_edge_betweenness(net) 
+
+dendPlot(ceb, mode="hclust")
+```
+
+```{r}
+plot(ceb, net) 
+```
+
+### Let’s examine the community detection igraph object:
+
+```{r}
+class(ceb)
+```
+
+```{r}
+length(ceb)   
+```
+
+```{r}
+membership(ceb) # community membership for each node
+```
+
+```{r}
+modularity(ceb) # how modular the graph partitioning is
+```
+
+### *Community detection based on based on propagating labels*
+
+### Assigns node labels, randomizes, than replaces each vertex’s label with the label that appears most frequently among neighbors. Those steps are repeated until each vertex has the most common label of its neighbors.
+
+```{r}
+clp <- cluster_label_prop(net)
+
+plot(clp, net)
+```
+
+*Community detection based on greedy optimization of modularity*
+
+```{r}
+cfg <- cluster_fast_greedy(as.undirected(net))
+
+plot(cfg, as.undirected(net))
+```
+
+### We can also plot the communities without relying on their built-in plot:
+
+```{r}
+V(net)$community <- cfg$membership
+
+colrs <- adjustcolor( c("gray50", "tomato", "gold", "yellowgreen"), alpha=.6)
+
+plot(net, vertex.color=colrs[V(net)$community])
+```
+
+
+
+
+
+
