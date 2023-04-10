@@ -1,0 +1,252 @@
+---
+title: 'Lecture 6: Linear models for regression and classification'
+author: "Xiao Guo"
+date: "2023/4/5"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<style type="text/css">
+
+body, td {
+   font-size: 14px;
+}
+code.r{
+  font-size: 20px;
+}
+pre {
+  font-size: 20px
+}
+</style>
+
+# 6.1. Simple Linear Regression
+
+### In this example, we are going to use the dataset `state.x77` that comes with standard R installation. It is a data set about the 50 states of united states.
+
+```{r}
+library(datasets)
+#help(state.x77)
+statedata=as.data.frame(state.x77)
+head(statedata)
+dim(statedata)
+```
+
+### First we can modify the column names (the variable names) for easier use. The function `colnames` can be used to retrieve the colume names or assign new names.
+
+```{r}
+colnames(statedata)=c("popu", "inc", "illit", "life.exp", "murder", "hs.grad", "frost", "area")
+```
+
+## Make a scatterplot
+
+### For this example, let’s look at the association between life expectancy (`life.exp`) and income (`inc`). The scatterplot below shows a positive association between these two variables.
+
+```{r}
+plot(life.exp~inc, data=statedata)
+```
+
+### We can compute the correlation between these two variables. The value of the correlation indicates a weak positive linear association.
+
+```{r}
+cor(statedata[,"life.exp"], statedata[,"inc"])
+```
+
+### There is one observation that is far away from the rest of the points. We would like to know which state is corresponding to that point. Let’s add state abbreviations to the plot.
+
+```{r}
+plot(life.exp~inc, data=statedata, type="n")
+text(life.exp~inc, data=statedata, state.abb)
+```
+
+## Fit a simple linear regression
+
+```{r}
+model1=lm(life.exp~inc, data=statedata)
+summary(model1)
+```
+
+### Consider a population of 50 states and we identify the true regression line in this population. Here the function abline add a straight line to an existing plot.
+
+```{r}
+plot(life.exp~inc, data=statedata,
+      xlab="Life Expectancy", ylab="Income")
+abline(model1)
+```
+
+
+### Now we can consider 4 random samples. We use a for loop to run an identical regression analysis on 4 randomly selected samples.
+
+### Within the loop, we will implement the following steps for each repetition.
+
+- ### Step 1: randomly select 10 states using the sample function of R.
+- ### Step 2: run least square regression on the selected states only
+- ### Step 3: compute a 95% confidence band for the true regression line in the population using the sample.
+
+
+```{r}
+par(mfrow=c(2,2)) # create a panel of four plotting areas
+
+for(i in 1:4){
+  ## Plot the population
+  plot(life.exp~inc, data=statedata,
+       xlab="Life Expectancy", ylab="Income",
+       title=paste("Random sample", format(i)),
+       ylim=c(min(life.exp), max(life.exp)+0.3))
+  abline(model1)
+  if(i==1){
+    legend(3030, 74.2, 
+           pch=c(NA, NA, NA, 1, 16), 
+           lty=c(1, 1, 2, NA, NA),
+           col=c(1, 2, 2, 1, 2),
+           c("population truth", "sample estimate",
+             "sample confidence band", 
+             "states", "sampled"),
+           cex=0.7,
+           bty="n"
+           )
+  }
+  ## Select the sample
+  selected.states=sample(1:50, 10)
+  points(statedata[selected.states,"inc"], 
+         statedata[selected.states,"life.exp"], pch=16, col=2)
+  ## Fit a regression line using the sample
+  model.sel = lm(life.exp~inc, data=statedata[selected.states,])
+  abline(model.sel, col=2)
+  ## Make a confidence band. 
+  #### first calculate the width of the band, W.
+  ww=qt(0.975, 10-2)
+  #### generate plotting X values. 
+  plot.x<-data.frame(inc=seq(3000, 7000, 1))
+  #### se.fit=T is an option to save 
+  #### the standard error of the fitted values. 
+  plot.fit<-predict(model.sel, plot.x, 
+                    level=0.95, interval="confidence", 
+                    se.fit=T)
+
+  #### lines is a function to add connected lines 
+  #### to an existing plot.
+  lines(plot.x$inc, plot.fit$fit[,1]+ww*plot.fit$se.fit, 
+        col=2, lty=2)
+  lines(plot.x$inc, plot.fit$fit[,1]-ww*plot.fit$se.fit, 
+        col=2, lty=2)
+}
+```
+
+
+# 6.2 Multiple Linear Regression
+
+### The `MASS` library contains the Boston data set, which records `medv` (median house value) for 506 neighborhoods around Boston. We will seek to predict `medv` using 13 predictors such as `rm` (average number of rooms per house), `age` (average age of houses), and `lstat` (percent of households with low socioeconomic status).
+
+```{r}
+library(MASS) 
+library(ISLR)
+attach(Boston)
+lm.fit=lm(medv ~ lstat+age,data=Boston) 
+summary(lm.fit)
+```
+
+### The Boston data set contains 13 variables, and so it would be cumbersome to have to type all of these in order to perform a regression using all of the predictors. Instead, we can use the following short-hand:
+
+```{r}
+lm.fit=lm(medv~.,data=Boston) 
+summary(lm.fit)
+```
+
+### What if we would like to perform a regression using all of the variables but one? For example, in the above regression output, `age` has a high p-value. So we may wish to run a regression excluding this predictor. The following syntax results in a regression using all predictors except `age`:
+
+```{r}
+lm.fit1=lm(medv ~.-age,data=Boston) 
+summary(lm.fit1)
+par(mfrow=c(2,2)) 
+plot(lm.fit1)
+```
+
+## Interaction Terms
+
+### It is easy to include interaction terms in a linear model using the `lm()` function. The syntax `lstat:black` tells R to include an interaction term between `lstat` and `black`. The syntax `lstat*age` simultaneously includes `lstat`, `age`, and the interaction term `lstat*age` as predictors; it is a shorthand for `lstat+age+lstat:age`.
+
+```{r}
+summary(lm(medv ~ lstat*age,data=Boston))
+```
+
+## Non-linear Transformations of the Predictors
+
+```{r}
+plot(lstat, medv, pch=16)
+```
+
+### The `lm()` function can also accommodate non-linear transformations of the predictors. For instance, given a predictor $X$, we can create a predictor $X^2$ using `I(X^2)`. The function `I()` is needed since the `^` has a special meaning in a formula; wrapping as we do allows the standard usage in R, which is `I()` to raise X to the power 2. We now perform a regression of `medv` onto `lstat` and `lstat^2`.
+
+```{r}
+lm.fit2=lm(medv ~ lstat+I(lstat^2)) 
+summary(lm.fit2)
+```
+
+```{r}
+par(mfrow=c(2,2)) 
+plot(lm.fit2)
+```
+
+# 6.3 Logistic Regression
+
+### This part, we focus on a classification problem. We will apply logistic regression to the iris data. First, we download the data.
+
+```{r}
+iris = read.table("http://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data", sep = ",", header = FALSE)
+names(iris) = c("sepal.length", "sepal.width", "petal.length", "petal.width", "iris.type")
+### attach name to each column so that we can directly access each column by its name
+attach(iris)
+```
+
+### We randomly split the data into training set and test set.
+
+```{r}
+train = sample.int(nrow(iris), 100)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# References
+
+- ### [Linear Methods for Regression and Classification](https://rstudio-pubs-static.s3.amazonaws.com/356958_9995dc3acde345a6a05f43f13a51310e.html)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
